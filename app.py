@@ -1,5 +1,5 @@
-from flask import Flask, jsonify
 import requests
+from flask import Flask, jsonify
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
@@ -9,20 +9,16 @@ def obtener_tipo_cambio():
     try:
         url = "https://www.ficohsa.com/hn/honduras/tipo-cambio"
         headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/123.0.0.0 Safari/537.36"
         }
-        response = requests.get(url, headers=headers, timeout=10)
-        response.raise_for_status()
-
+        response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        for row in soup.find_all("tr"):
-            cols = row.find_all("td")
-            if len(cols) >= 2 and "Venta" in cols[0].text:
-                valor = cols[1].text.strip().replace("Lps. ", "").replace(",", "")
-                return jsonify({"tipoCambio": round(float(valor), 4)})
+        for td in soup.find_all("td"):
+            if "Venta" in td.text:
+                valor = td.find_next_sibling("td").text.strip().replace("Lps. ", "").replace(",", "")
+                return jsonify({"tipoCambio": float(valor)})
 
-        return jsonify({"tipoCambio": 25.7784})
+        return jsonify({"tipoCambio": 25.78})
     except Exception as e:
-        print("Error al obtener tipo de cambio:", e)
-        return jsonify({"tipoCambio": 25.7784})
+        return jsonify({"tipoCambio": 25.78, "error": str(e)})
