@@ -20,6 +20,11 @@ def obtener_tipo_cambio():
                 valor = texto.split("Venta: Lps")[-1].strip()
                 return jsonify({"tipoCambio": float(valor)})
 
-        return jsonify({"tipoCambio": 25.78})
-    except Exception as e:
+        ...
         return jsonify({"tipoCambio": 25.78, "error": str(e)})
+
+import os
+
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
