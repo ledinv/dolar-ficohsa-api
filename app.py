@@ -1,5 +1,5 @@
-import requests
 from flask import Flask, jsonify
+import requests
 from bs4 import BeautifulSoup
 
 app = Flask(__name__)
@@ -14,9 +14,10 @@ def obtener_tipo_cambio():
         response = requests.get(url, headers=headers)
         soup = BeautifulSoup(response.text, "html.parser")
 
-        for td in soup.find_all("td"):
-            if "Venta" in td.text:
-                valor = td.find_next_sibling("td").text.strip().replace("Lps. ", "").replace(",", "")
+        for p in soup.find_all("p"):
+            if "Venta: Lps" in p.get_text():
+                texto = p.get_text().strip()
+                valor = texto.split("Venta: Lps")[-1].strip()
                 return jsonify({"tipoCambio": float(valor)})
 
         return jsonify({"tipoCambio": 25.78})
