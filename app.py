@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 import requests
 from bs4 import BeautifulSoup
+import os
 
 app = Flask(__name__)
 
@@ -20,11 +21,12 @@ def obtener_tipo_cambio():
                 valor = texto.split("Venta: Lps")[-1].strip()
                 return jsonify({"tipoCambio": float(valor)})
 
-        ...
+        return jsonify({"tipoCambio": 25.78, "error": "Valor no encontrado"})
+
+    except Exception as e:
         return jsonify({"tipoCambio": 25.78, "error": str(e)})
 
-import os
-
+# Aquí Flask usará el puerto que Render le asigna
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
